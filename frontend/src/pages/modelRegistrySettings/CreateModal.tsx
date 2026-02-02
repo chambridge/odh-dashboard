@@ -123,9 +123,12 @@ const CreateModal: React.FC<CreateModalProps> = ({ onClose, refresh, modelRegist
   React.useEffect(() => {
     if (mr) {
       // Determine database type and source from existing registry
+      // Prefer postgres if both specs exist (though only one should be non-null)
       const isPostgres = !!mr.spec.postgres;
       const isMysql = !!mr.spec.mysql;
-      const dbSpec = mr.spec.mysql || mr.spec.postgres;
+
+      // Explicitly choose dbSpec to match the determined type (prefer postgres)
+      const dbSpec = isPostgres ? mr.spec.postgres : isMysql ? mr.spec.mysql : undefined;
 
       if (isPostgres) {
         setDatabaseType(DatabaseType.POSTGRES);
